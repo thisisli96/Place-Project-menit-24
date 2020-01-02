@@ -36,6 +36,7 @@
 			android:text="places project needs permmisssion to access device location to provide service. please allow the permission "/>
 
 	</LinearLayout>
+
     <Button
 	    android:id="@+id/btn_grant"
 	    android:layout_width="match_parent"

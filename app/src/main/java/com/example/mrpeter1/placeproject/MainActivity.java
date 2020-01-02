@@ -45,9 +45,9 @@ private Button btnGrant;
                         .withListener(new PermissionListener() {
                             @Override
                             public void onPermissionGranted(PermissionGrantedResponse response) {
-//                                startActivity(new Intent(MainActivity.this, MapActivity.class));
-//                                finish();
-//                                return;
+                                startActivity(new Intent(MainActivity.this, MapActivity.class));
+                                finish();
+                                return;
 
                             }
 
