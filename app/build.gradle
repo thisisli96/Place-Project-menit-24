@@ -34,5 +34,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0' //library buat maps
 //    implementation 'com.github.mancj:MaterialSearchBar:0.8.2' // buat menusearch // search bar
     implementation 'com.github.mancj:MaterialSearchBar:0.8.3'
-    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0' //buat menusearch juga
+    implementation 'com.google.android.libraries.places:places:2.0.0' // buat api Place map
 }
