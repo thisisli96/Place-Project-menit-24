@@ -48,6 +48,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient; //fetching the location of the device
     private PlacesClient placesClient;
-    private List<AutocompletePrediction> predictions;
+    private List<AutocompletePrediction> predictionList;
 
     private Location mLastKnownLocation; // be storing current last known location
     private LocationCallback locationCallback; // untuk update atau memperbarui location terakhir
@@ -128,7 +129,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     @Override
                     public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
                         if (task.isSuccessful()){
-
+                            FindAutocompletePredictionsResponse predictionsResponse = task.getResult();
+                            if(predictionsResponse != null){
+                                predictionList = predictionsResponse.getAutocompletePredictions();
+                                List<String> suggestionList = new ArrayList<>();
+                                for (int i=0; i < predictionList.size(); i++){
+                                    AutocompletePrediction prediction = predictionList.get(i);
+                                    suggestionList.add(prediction.getFullText(null).toString());
+                                }
+                                materialSearchBar.updateLastSuggestions(suggestionList);
+                                if(!materialSearchBar.isSuggestionsVisible()){
+                                    materialSearchBar.showSuggestionsList();
+                                }
+                            }
                         }else   {
                             Log.i("mytag", "prediction fetching task unseccessful");
                         }
