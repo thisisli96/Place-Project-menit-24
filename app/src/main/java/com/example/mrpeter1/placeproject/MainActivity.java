@@ -23,6 +23,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 private Button btnGrant;
     @Override
@@ -30,7 +32,8 @@ private Button btnGrant;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED){ // untuk mengecek jika sudah dapat permission
+            startActivity(new Intent(MainActivity.this, MapActivity.class));
             finish();
             return;
         }
@@ -44,10 +47,10 @@ private Button btnGrant;
                         .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                         .withListener(new PermissionListener() {
                             @Override
-                            public void onPermissionGranted(PermissionGrantedResponse response) {
+                             public void onPermissionGranted(PermissionGrantedResponse response) {
                                 startActivity(new Intent(MainActivity.this, MapActivity.class));
                                 finish();
-                                return;
+                                // return;
 
                             }
 

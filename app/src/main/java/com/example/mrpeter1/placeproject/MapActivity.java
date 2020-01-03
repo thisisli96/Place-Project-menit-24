@@ -26,6 +26,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,6 +40,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -77,7 +83,64 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapActivity.this); // inisiasi varibel atau ini untuk enable fused location
         Places.initialize(MapActivity.this,"AIzaSyAvnr2u_HcPVVhK-aC4Q1XBDMjKeeRzavY"); //
         placesClient = Places.createClient(this);
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        final AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+
+        materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                startSearch(text.toString(),true,null,true);
+
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+                if (buttonCode == MaterialSearchBar.BUTTON_BACK){
+                    //if click opening or closing a navigation drawer
+
+                } else if (buttonCode == MaterialSearchBar.BUTTON_BACK){
+                    materialSearchBar.disableSearch();
+                }
+
+            }
+        });
+
+        materialSearchBar.addTextChangeListener(new TextWatcher() { // ketika search barnya di isi tulisan
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+ // logic in here
+                FindAutocompletePredictionsRequest predictionsRequest = FindAutocompletePredictionsRequest.builder()
+                        .setCountry("id")
+                        .setTypeFilter(TypeFilter.ADDRESS)
+                        .setSessionToken(token)
+                        .setQuery(s.toString())
+                        .build();
+                placesClient.findAutocompletePredictions(predictionsRequest).addOnCompleteListener(new OnCompleteListener<FindAutocompletePredictionsResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<FindAutocompletePredictionsResponse> task) {
+                        if (task.isSuccessful()){
+
+                        }else   {
+                            Log.i("mytag", "prediction fetching task unseccessful");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -96,7 +159,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT,0);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParams.setMargins(0,0,40,180);
-        }
+        } // dari atas sampai bawa ini, membuat ui untuk mengubah peta
 
         // mengganti lokasi user tapi sebelum itu kita pastikan dulu apakah gps aktif atay tidak
         // check if gps is enable or  not and ther request user to enable it
@@ -115,7 +178,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
-            }
+            } // jika gps is enable this function is called
         });
 
         task.addOnFailureListener(MapActivity.this, new OnFailureListener() {
@@ -129,7 +192,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     } catch (IntentSender.SendIntentException ex) {
                         ex.printStackTrace();
                     }
-                }
+                } // if gps is not enable this function is called
 
             }
         });
@@ -177,7 +240,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                              }
                              mLastKnownLocation = locationResult.getLastLocation();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()),DEFAULT_ZOOM));
-                            //mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                            mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
 
                             }
 
@@ -191,4 +254,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
+
+    // next step would be to use the places API switch suggestions as the user tyoes in the search bar
+    // user search in search bar
+
 }
